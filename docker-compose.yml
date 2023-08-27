@@ -1,0 +1,21 @@
+version: '3.1'
+services:
+  elasticsearch:
+    image: elasticsearch:7.13.3
+    container_name: elasticsearch
+    privileged: true
+    environment:
+      - "cluster.name=elasticsearch" #设置集群名称为elasticsearch
+      - "discovery.type=single-node" #以单一节点模式启动
+      - "ES_JAVA_OPTS=-Xms4096m -Xmx8192m" #设置使用jvm内存大小
+      # - bootstrap.memory_lock=true
+    volumes:
+      - ./es/plugins:/usr/local/dockercompose/elasticsearch/plugins #插件文件挂载
+      - ./es/data:/usr/local/dockercompose/elasticsearch/data:rw #数据文件挂载
+      - ./es/logs:/usr/local/dockercompose/elasticsearch/logs:rw
+    deploy:
+     resources:
+        limits:
+           cpus: "8"
+           memory: 8192M
+    network_mode: "host"

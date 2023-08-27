@@ -1,0 +1,11 @@
+#!/usr/bin/env bpftrace
+
+kprobe:do_huge_pmd_anonymous_page
+{
+    @start[tid] = nsecs;
+}
+
+kprobe:do_huge_pmd_anonymous_page /@start[tid]/
+{
+    @ns[comm] = hist(nsecs - @start[tid]); delete(@start[tid]);
+}

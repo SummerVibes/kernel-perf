@@ -1,0 +1,10 @@
+/kernel
+/mysql/data
+/iperf
+/docker-24.0.2.tgz
+/docker
+/sysstat
+**/perf*.json
+**/__pycache__
+/es
+.ccls-cache/
