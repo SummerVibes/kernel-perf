@@ -78,6 +78,9 @@ def run_shell(sh):
 def get_sh_path(str):
     return sys.path[0]+'/sh/'+str
 
+function_name="do_anonymous_page"
+# function_name="do_huge_pmd_anonymous_page"
+
 def start_trace(pid):
     print("Setting ftrace parameters ...\n")
     os.system("rm -f log")
@@ -88,7 +91,7 @@ def start_trace(pid):
     print("Selecting current tracer ...")
     os.system("echo function_graph | tee /sys/kernel/debug/tracing/current_tracer")
     print("Selecting ftrace filter ...")
-    os.system("echo do_anonymous_page | tee /sys/kernel/debug/tracing/set_ftrace_filter")
+    os.system(f"echo {function_name} | tee /sys/kernel/debug/tracing/set_ftrace_filter")
     print("Enabling trace for forked pidsi ...")
     os.system("echo 1 > /sys/kernel/debug/tracing/options/function-fork")
     print("Increasing trace buffer size ...")
@@ -107,8 +110,8 @@ def end_trace():
     os.system("> /sys/kernel/debug/tracing/trace")
     os.system("echo 1408 > /sys/kernel/debug/tracing/buffer_size_kb")
     os.system("echo 1 > /sys/kernel/debug/tracing/tracing_on")
-    os.system("sed 's/^.......//' log > tmp; rm -r log;\
-			cat tmp | grep do_anonymous_page > log; rm -f tmp")
+    os.system(f"sed 's/^.......//' log > tmp; rm -r log;\
+			cat tmp | grep {function_name} > log; rm -f tmp")
     os.system("total=$(awk '{sum+=$1;n++} END { if(n>0) print(sum)}' log);\
 				echo Total Page Fault Time: $total us")
     os.system("total=$(awk '{n++} END { if(n>0) print(n)}' log);\
