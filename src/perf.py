@@ -31,11 +31,12 @@ class TaskRunner():
         print(f"======================= Run for {self.task_name} ===========================")
         self.task.start()
         functions = ["do_anonymous_page", "do_huge_pmd_anonymous_page"]
-        tools.start_trace(self.task.pid, functions)
+        pid = self.task.get_pid_for_monitor()
+        tools.start_trace(pid, functions)
         # monitor
         print(f"======================= Monitor for {self.task_name} =======================")
         while self.task.is_alive():
-            res=self.task.monitor(self.task.pid, self.interval)
+            res=self.task.monitor(pid, self.interval)
             res['time'] = tools.get_cur_time()
             self.metric.append(res)
         # end / cleanup

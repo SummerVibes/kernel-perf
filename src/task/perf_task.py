@@ -43,3 +43,6 @@ class PerfTask(Process, metaclass=ABCMeta):
     def run_hook(self):
         print("Wait ftrace start.....")
         time.sleep(3)
+
+    def get_pid_for_monitor(self):
+        return self.task.pid

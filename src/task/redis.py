@@ -24,3 +24,6 @@ class RedisPerf(PerfTask):
     
     def post_run(self):
         pass
+
+    def get_pid_for_monitor(self):
+        return subprocess.check_output("pgrep redis-server")
