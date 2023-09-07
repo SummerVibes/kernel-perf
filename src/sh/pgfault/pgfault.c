@@ -10,7 +10,7 @@ int iterations = 1;
 unsigned long memory = 1;
 unsigned long bytes_per_thread = 1;
 
-unsigned long page_size = 4096;
+unsigned long page_size = 4096 * 512;
 
 void *alloc_mem(void *arg) {
   int nr_pages, iter = 0;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
   int i, c, pid, ret;
   pthread_t *pthread;
 
-  while ((c = getopt(argc, argv, "m:t:i:p")) != -1) {
+  while ((c = getopt(argc, argv, "m:t:i:")) != -1) {
     switch (c) {
     case 'm':
       memory = atoi(optarg);
@@ -64,11 +64,8 @@ int main(int argc, char *argv[]) {
     case 'i':
       iterations = atoi(optarg);
       break;
-    case 'p':
-      page_size = 4096 * 512;
-      break;
     default:
-      printf("Usage: %s [-m memoryGB] [-t nr_threads] [-i iterations] [-p use thp]\n",
+      printf("Usage: %s [-m memoryGB] [-t nr_threads] [-i iterations]\n",
              argv[0]);
       exit(EXIT_FAILURE);
     }

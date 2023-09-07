@@ -56,9 +56,8 @@ all_perf_result = {}
 manager=mp.Manager()
 single_result=manager.dict()
 
-# TaskRunner(MemoryPerf(single_result)).start()
-# TaskRunner(MemoryTHPPerf(single_result)).start()
-# TaskRunner(RedisPerf(single_result)).start()
+TaskRunner(MemoryPerf(single_result)).start()
+TaskRunner(RedisPerf(single_result)).start()
 TaskRunner(DockerPerf(single_result)).start()
 
 with open(f"perf-{time.strftime('%d-%H-%M-%S', time.localtime())}.json", 'x') as f:
