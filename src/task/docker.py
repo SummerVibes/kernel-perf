@@ -2,14 +2,13 @@ import subprocess
 import tools
 import re
 from task.perf_task import PerfTask
-class JavaPerf(PerfTask):
-    name = "java"
+class DockerPerf(PerfTask):
+    name = "docker"
 
     def pre_run(self):
         pass
-    
     def run(self):
-        data = tools.run_shell("java.sh")
+        data = tools.run_shell("docker/run.sh")
         self.perf_result["Success"] = self.parse(data)
 
     def parse(self, data) -> dict:
@@ -22,4 +21,4 @@ class JavaPerf(PerfTask):
         return stat
     
     def post_run(self):
-        pass
+        tools.run_shell("docker/clean.sh")

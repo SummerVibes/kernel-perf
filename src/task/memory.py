@@ -6,17 +6,16 @@ class MemoryPerf(PerfTask):
     name = "memory"
 
     def pre_run(self):
-        pass
+        tools.run_shell("pgfault/prepare.sh")
     
     def run(self):
         self.run_hook()
-        data = tools.run_shell("memory.sh")
+        data = tools.run_shell("pgfault/run.sh")
         self.perf_result["Success"] = self.parse(data)
 
     def parse(self, data) -> dict:
-        # speed = re.search(r'([0-9.]*) MiB/sec', data).group(1)
         return {
-            "Memory Speed": data
+            "Memory Result": data
         }
     
     def monitor(self, pid, interval) -> dict:

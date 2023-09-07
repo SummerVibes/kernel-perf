@@ -1,12 +1,12 @@
 import json
 import subprocess
 import time
-from task.cpu import CPUPerf
-from task.java import JavaPerf
+from task.docker import DockerPerf
+from task.memory_thp import MemoryTHPPerf
 from task.perf_task import PerfTask
 from task.memory import MemoryPerf
 import multiprocessing as mp
-from task.vm import VmPerf
+from task.redis import RedisPerf
 import tools
 
 class TaskRunner():
@@ -31,7 +31,8 @@ class TaskRunner():
         # run
         print(f"======================= Run for {self.task_name} ===========================")
         self.task.start()
-        tools.start_trace(self.task.pid)
+        functions = ["do_anonymous_page", "do_huge_pmd_anonymous_page"]
+        tools.start_trace(self.task.pid, functions)
         # monitor
         print(f"======================= Monitor for {self.task_name} =======================")
         while self.task.is_alive():
@@ -40,7 +41,7 @@ class TaskRunner():
             self.metric.append(res)
         # end / cleanup
         print(f"======================= Cleanup for {self.task_name} =======================")
-        tools.end_trace()
+        tools.end_trace(functions)
         self.task_result["result"] = single_result.copy()
         single_result.clear()
         try:
@@ -50,15 +51,15 @@ class TaskRunner():
             return
 
 all_perf_result = {}
-all_perf_result['system_info'] = tools.system_info()
+# all_perf_result['system_info'] = tools.system_info()
 
 manager=mp.Manager()
 single_result=manager.dict()
 
-TaskRunner(MemoryPerf(single_result)).start()
-# TaskRunner(CPUPerf(single_result)).start()
-# TaskRunner(VmPerf(single_result)).start()
-# TaskRunner(JavaPerf(single_result)).start()
+# TaskRunner(MemoryPerf(single_result)).start()
+# TaskRunner(MemoryTHPPerf(single_result)).start()
+# TaskRunner(RedisPerf(single_result)).start()
+TaskRunner(DockerPerf(single_result)).start()
 
 with open(f"perf-{time.strftime('%d-%H-%M-%S', time.localtime())}.json", 'x') as f:
     json.dump(all_perf_result, f)

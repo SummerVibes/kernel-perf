@@ -78,10 +78,7 @@ def run_shell(sh):
 def get_sh_path(str):
     return sys.path[0]+'/sh/'+str
 
-function_name="do_anonymous_page"
-# function_name="do_huge_pmd_anonymous_page"
-
-def start_trace(pid):
+def start_trace(pid, function_names):
     print("Setting ftrace parameters ...\n")
     os.system("rm -f log")
     print("Disabling trace ...\n")
@@ -91,37 +88,37 @@ def start_trace(pid):
     print("Selecting current tracer ...")
     os.system("echo function_graph | tee /sys/kernel/debug/tracing/current_tracer")
     print("Selecting ftrace filter ...")
-    os.system(f"echo {function_name} | tee /sys/kernel/debug/tracing/set_ftrace_filter")
+    os.system(f"echo | tee /sys/kernel/debug/tracing/set_ftrace_filter")
+    for f in function_names:
+        os.system(f"echo {f} >> /sys/kernel/debug/tracing/set_ftrace_filter")
     print("Enabling trace for forked pidsi ...")
     os.system("echo 1 > /sys/kernel/debug/tracing/options/function-fork")
     print("Increasing trace buffer size ...")
-    os.system("echo 1048576 > /sys/kernel/debug/tracing/buffer_size_kb")
+    os.system("echo 512000 > /sys/kernel/debug/tracing/buffer_size_kb")
     print("Configuring ftrace PID ...")
     os.system(f"echo {pid} > /sys/kernel/debug/tracing/set_ftrace_pid")
     print("Enabling tracing ...")
     os.system("echo 1 > /sys/kernel/debug/tracing/tracing_on")
     print("ftrace configured. Executing the workload...")
 
-def end_trace():
+def end_trace(function_names):
     print("dumping and clearing trace")
-    os.system("tail -n+5 /sys/kernel/debug/tracing/trace >> log")
-    os.system("> /sys/kernel/debug/tracing/trace")
     os.system("echo 0 > /sys/kernel/debug/tracing/tracing_on")
+    for f in function_names:
+        os.system("tail -n+5 /sys/kernel/debug/tracing/trace >> log")
+        os.system(f"sed 's/^.......//' log > tmp; rm -r log;\
+                cat tmp | grep {f} > log; rm -f tmp")
+        print(f"Status for {f}")
+        os.system("total=$(awk '{sum+=$1;n++} END { if(n>0) print(sum)}' log);\
+                    echo Total Page Fault Time: $total us")
+        os.system("total=$(awk '{n++} END { if(n>0) print(n)}' log);\
+                    echo Total Page Fault Num: $total")
+        os.system("avg=$(awk '{sum+=$1;n++} END { if(n>0) print(sum/n)}' log);\
+                    echo Average Page Fault Time: $avg us; rm -f log")
     os.system("> /sys/kernel/debug/tracing/trace")
+    print("ftrace parameters cleared successfully...")
     os.system("echo 1408 > /sys/kernel/debug/tracing/buffer_size_kb")
     os.system("echo 1 > /sys/kernel/debug/tracing/tracing_on")
-    os.system(f"sed 's/^.......//' log > tmp; rm -r log;\
-			cat tmp | grep {function_name} > log; rm -f tmp")
-    os.system("total=$(awk '{sum+=$1;n++} END { if(n>0) print(sum)}' log);\
-				echo Total Page Fault Time: $total us")
-    os.system("total=$(awk '{n++} END { if(n>0) print(n)}' log);\
-				echo Total Page Fault Num: $total")
-    os.system("avg=$(awk '{sum+=$1;n++} END { if(n>0) print(sum/n)}' log);\
-				echo Average Page Fault Time: $avg us; rm -f log")
-    print("ftrace parameters cleared successfully...")
-
-
-
 
 def get_cur_time():
     return time.strftime("%H:%M:%S", time.localtime())

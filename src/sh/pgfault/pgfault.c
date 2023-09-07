@@ -23,12 +23,13 @@ void *alloc_mem(void *arg) {
 			printf("mmap failed\n");
 			return NULL;
 		}
-#endif
+#else
     tmp = malloc(bytes_per_thread);
     if (!tmp) {
       printf("Malloc failed");
       exit(EXIT_FAILURE);
     }
+#endif
 
     start = tmp;
     nr_pages = bytes_per_thread / page_size;
@@ -39,8 +40,10 @@ void *alloc_mem(void *arg) {
 #if 0
 		if (munmap(tmp, bytes_per_thread) == 1)
 			perror("error unmapping the file\n");
-#endif
+#else
     free(tmp);
+#endif
+
     iter++;
   }
   return NULL;
@@ -50,7 +53,7 @@ int main(int argc, char *argv[]) {
   int i, c, pid, ret;
   pthread_t *pthread;
 
-  while ((c = getopt(argc, argv, "m:t:i:p:")) != -1) {
+  while ((c = getopt(argc, argv, "m:t:i:p")) != -1) {
     switch (c) {
     case 'm':
       memory = atoi(optarg);
@@ -65,7 +68,7 @@ int main(int argc, char *argv[]) {
       page_size = 4096 * 512;
       break;
     default:
-      printf("Usage: %s [-m memoryGB] [-t nr_threads] [-i iterations]\n",
+      printf("Usage: %s [-m memoryGB] [-t nr_threads] [-i iterations] [-p use thp]\n",
              argv[0]);
       exit(EXIT_FAILURE);
     }
@@ -81,6 +84,7 @@ int main(int argc, char *argv[]) {
   printf("Memory: \t\t%ldGB\n", memory);
   printf("Threads: \t\t%d\n", nr_threads);
   printf("Iterations: \t\t%d\n", iterations);
+  printf("PageSize: \t\t%lu\n", page_size);
   printf("Bytes Per Thread: \t%ld\n", bytes_per_thread);
 
   for (i = 0; i < nr_threads; i++)
