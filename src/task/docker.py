@@ -17,8 +17,9 @@ class DockerPerf(PerfTask):
     def monitor(self, pid, interval) -> dict:
         stat = {
             "cpu_stat": tools.cpu_stat(interval),
+            "mem_stat": tools.mem_stat(pid)
         }
         return stat
     
     def post_run(self):
-        tools.run_shell("docker/clean.sh")
+        pass

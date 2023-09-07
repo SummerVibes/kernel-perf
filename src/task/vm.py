@@ -7,7 +7,7 @@ class VmPerf(PerfTask):
         pass
     
     def run(self):
-        data = tools.run_shell("vm.sh")
+        data = tools.run_shell("vmm/vm.sh")
         self.perf_result["Success"] = self.parse(data)
 
     def parse(self, data) -> dict:
@@ -16,6 +16,7 @@ class VmPerf(PerfTask):
     def monitor(self, pid, interval) -> dict:
         stat = {
             "cpu_stat": tools.cpu_stat(interval),
+            "mem_stat": tools.mem_stat(pid)
         }
         return stat
     

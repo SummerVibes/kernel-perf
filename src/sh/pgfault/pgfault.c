@@ -10,7 +10,7 @@ int iterations = 1;
 unsigned long memory = 1;
 unsigned long bytes_per_thread = 1;
 
-unsigned long page_size = 4096 * 512;
+unsigned long page_size = 4096;
 
 void *alloc_mem(void *arg) {
   int nr_pages, iter = 0;

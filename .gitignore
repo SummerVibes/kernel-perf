@@ -8,3 +8,4 @@
 **/__pycache__
 /es
 .ccls-cache/
+src/sh/pgfault/pgfault

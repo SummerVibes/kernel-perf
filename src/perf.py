@@ -4,8 +4,8 @@ import time
 from task.docker import DockerPerf
 from task.perf_task import PerfTask
 from task.memory import MemoryPerf
+from task.vm import VmPerf
 import multiprocessing as mp
-from task.redis import RedisPerf
 import tools
 
 class TaskRunner():
@@ -57,8 +57,8 @@ manager=mp.Manager()
 single_result=manager.dict()
 
 TaskRunner(MemoryPerf(single_result)).start()
-TaskRunner(RedisPerf(single_result)).start()
 TaskRunner(DockerPerf(single_result)).start()
+TaskRunner(VmPerf(single_result)).start()
 
 with open(f"perf-{time.strftime('%d-%H-%M-%S', time.localtime())}.json", 'x') as f:
     json.dump(all_perf_result, f)

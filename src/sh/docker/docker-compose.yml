@@ -13,9 +13,4 @@ services:
       - ./es/plugins:/usr/local/dockercompose/elasticsearch/plugins #插件文件挂载
       - ./es/data:/usr/local/dockercompose/elasticsearch/data:rw #数据文件挂载
       - ./es/logs:/usr/local/dockercompose/elasticsearch/logs:rw
-    deploy:
-     resources:
-        limits:
-           cpus: "8"
-           memory: 8192M
     network_mode: "host"
