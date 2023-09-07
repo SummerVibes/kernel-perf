@@ -2,7 +2,6 @@ import json
 import subprocess
 import time
 from task.docker import DockerPerf
-from task.memory_thp import MemoryTHPPerf
 from task.perf_task import PerfTask
 from task.memory import MemoryPerf
 import multiprocessing as mp
