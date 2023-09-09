@@ -13,6 +13,9 @@ function install_docker() {
     sudo systemctl enable docker
 }
 
-sudo so
+function install_slim() {
+    wget https://downloads.dockerslim.com/releases/1.40.2/dist_linux.tar.gz
+}
+
 install_package
 install_docker

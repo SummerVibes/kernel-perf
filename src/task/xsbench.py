@@ -1,14 +1,14 @@
 import tools
 from task.perf_task import PerfTask
-class VmPerf(PerfTask):
-    name = "vm"
+class XSBenchPerf(PerfTask):
+    name = "xsbench"
 
     def pre_run(self):
         pass
     
     def run(self):
         self.run_hook()
-        data = tools.run_shell("vmm/vm.sh")
+        data = tools.run_shell("xsbench/run.sh")
         self.perf_result["Success"] = self.parse(data)
 
     def parse(self, data) -> dict:

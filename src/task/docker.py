@@ -7,7 +7,9 @@ class DockerPerf(PerfTask):
 
     def pre_run(self):
         pass
+    
     def run(self):
+        self.run_hook()
         data = tools.run_shell("docker/run.sh")
         self.perf_result["Success"] = self.parse(data)
 
