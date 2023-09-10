@@ -38,7 +38,7 @@ void *alloc_mem(void *arg) {
       *start = 'A';
       start += page_size;
       if(real) {
-        int clock = 100000000; // 1 亿次
+        int clock = 10000; // 1 亿次
         while(clock-- > 0)
           continue;
       }
