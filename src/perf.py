@@ -8,7 +8,7 @@ from task.mem_real import MemoryRealPerf
 from task.mem_sb import MemorySBPerf
 from task.mem_ss import MemorySSPerf
 from task.perf_task import PerfTask
-from task.vm import VmPerf
+from task.redis import RedisPerf
 import multiprocessing as mp
 from task.xsbench import XSBenchPerf
 import tools
@@ -66,6 +66,7 @@ TaskRunner(MemoryLSPerf(single_result)).start()
 TaskRunner(MemorySBPerf(single_result)).start()
 TaskRunner(MemorySSPerf(single_result)).start()
 TaskRunner(MemoryRealPerf(single_result)).start()
+TaskRunner(RedisPerf(single_result)).start()
 # TaskRunner(DockerPerf(single_result)).start()
 # TaskRunner(VmPerf(single_result)).start()
 # TaskRunner(XSBenchPerf(single_result)).start()
