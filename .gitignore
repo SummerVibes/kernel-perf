@@ -9,3 +9,4 @@
 /es
 .ccls-cache/
 src/sh/pgfault/pgfault
+src/sh/memory/pgfault

@@ -4,6 +4,7 @@ import time
 from task.docker import DockerPerf
 from task.mem_lb import MemoryLBPerf
 from task.mem_ls import MemoryLSPerf
+from task.mem_real import MemoryRealPerf
 from task.mem_sb import MemorySBPerf
 from task.mem_ss import MemorySSPerf
 from task.perf_task import PerfTask
@@ -64,6 +65,7 @@ TaskRunner(MemoryLBPerf(single_result)).start()
 TaskRunner(MemoryLSPerf(single_result)).start()
 TaskRunner(MemorySBPerf(single_result)).start()
 TaskRunner(MemorySSPerf(single_result)).start()
+TaskRunner(MemoryRealPerf(single_result)).start()
 # TaskRunner(DockerPerf(single_result)).start()
 # TaskRunner(VmPerf(single_result)).start()
 # TaskRunner(XSBenchPerf(single_result)).start()
