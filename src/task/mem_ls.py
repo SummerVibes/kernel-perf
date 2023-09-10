@@ -2,15 +2,15 @@ import subprocess
 import tools
 import re
 from task.perf_task import PerfTask
-class MemoryPerf(PerfTask):
-    name = "memory"
+class MemoryLSPerf(PerfTask):
+    name = "memory_ls"
 
     def pre_run(self):
-        tools.run_shell("pgfault/prepare.sh")
+        tools.run_shell("memory/prepare.sh")
     
     def run(self):
         self.run_hook()
-        data = tools.run_shell("pgfault/run.sh")
+        data = tools.run_shell("memory/ls.sh")
         self.perf_result["Success"] = self.parse(data)
 
     def parse(self, data) -> dict:

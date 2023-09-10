@@ -9,6 +9,7 @@ int nr_threads = 1;
 int iterations = 1;
 unsigned long memory = 1;
 unsigned long bytes_per_thread = 1;
+int real = 0;
 
 unsigned long page_size = 4096;
 
@@ -36,6 +37,11 @@ void *alloc_mem(void *arg) {
     while (nr_pages--) {
       *start = 'A';
       start += page_size;
+      if(real) {
+        int clock = 100000000; // 1 亿次
+        while(clock-- > 0)
+          continue;
+      }
     }
 #if 0
 		if (munmap(tmp, bytes_per_thread) == 1)
@@ -53,7 +59,7 @@ int main(int argc, char *argv[]) {
   int i, c, pid, ret;
   pthread_t *pthread;
 
-  while ((c = getopt(argc, argv, "m:t:i:")) != -1) {
+  while ((c = getopt(argc, argv, "m:t:i:r")) != -1) {
     switch (c) {
     case 'm':
       memory = atoi(optarg);
@@ -63,6 +69,9 @@ int main(int argc, char *argv[]) {
       break;
     case 'i':
       iterations = atoi(optarg);
+      break;
+    case 'r':
+      real = 1;
       break;
     default:
       printf("Usage: %s [-m memoryGB] [-t nr_threads] [-i iterations]\n",

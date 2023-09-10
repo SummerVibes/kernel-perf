@@ -2,8 +2,11 @@ import json
 import subprocess
 import time
 from task.docker import DockerPerf
+from task.mem_lb import MemoryLBPerf
+from task.mem_ls import MemoryLSPerf
+from task.mem_sb import MemorySBPerf
+from task.mem_ss import MemorySSPerf
 from task.perf_task import PerfTask
-from task.memory import MemoryPerf
 from task.vm import VmPerf
 import multiprocessing as mp
 from task.xsbench import XSBenchPerf
@@ -57,10 +60,13 @@ all_perf_result = {}
 manager=mp.Manager()
 single_result=manager.dict()
 
-# TaskRunner(MemoryPerf(single_result)).start()
+TaskRunner(MemoryLBPerf(single_result)).start()
+TaskRunner(MemoryLSPerf(single_result)).start()
+TaskRunner(MemorySBPerf(single_result)).start()
+TaskRunner(MemorySSPerf(single_result)).start()
 # TaskRunner(DockerPerf(single_result)).start()
 # TaskRunner(VmPerf(single_result)).start()
-TaskRunner(XSBenchPerf(single_result)).start()
+# TaskRunner(XSBenchPerf(single_result)).start()
 
 with open(f"perf-{time.strftime('%d-%H-%M-%S', time.localtime())}.json", 'x') as f:
     json.dump(all_perf_result, f)
