@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import time
 from task.docker import DockerPerf
@@ -34,6 +35,8 @@ class TaskRunner():
             return
         # run
         print(f"======================= Run for {self.task_name} ===========================")
+        alloced = int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $1}'"))
+        alloced_zero = int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $1}'"))
         self.task.start()
         #functions = ["do_anonymous_page", "do_huge_pmd_anonymous_page"]
         functions = ["do_anonymous_page"]
@@ -45,8 +48,11 @@ class TaskRunner():
             res=self.task.monitor(pid, self.interval)
             res['time'] = tools.get_cur_time()
             self.metric.append(res)
+        alloced = alloced - int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $1}'"))
+        alloced_zero = alloced_zero - int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $1}'"))
         # end / cleanup
         print(f"======================= Cleanup for {self.task_name} =======================")
+        print(f"alloced: {alloced}, alloced_zero: {alloced_zero}, hit: {alloced_zero/alloced}%")
         tools.end_trace(functions)
         self.task_result["result"] = single_result.copy()
         single_result.clear()
@@ -63,11 +69,11 @@ manager=mp.Manager()
 single_result=manager.dict()
 
 TaskRunner(MemoryLBPerf(single_result)).start()
-#TaskRunner(MemoryLSPerf(single_result)).start()
-#TaskRunner(MemorySBPerf(single_result)).start()
-#TaskRunner(MemorySSPerf(single_result)).start()
-#TaskRunner(MemoryRealPerf(single_result)).start()
-#TaskRunner(RedisPerf(single_result)).start()
+TaskRunner(MemoryLSPerf(single_result)).start()
+TaskRunner(MemorySBPerf(single_result)).start()
+TaskRunner(MemorySSPerf(single_result)).start()
+TaskRunner(MemoryRealPerf(single_result)).start()
+TaskRunner(RedisPerf(single_result)).start()
 # TaskRunner(DockerPerf(single_result)).start()
 # TaskRunner(VmPerf(single_result)).start()
 # TaskRunner(XSBenchPerf(single_result)).start()

@@ -78,6 +78,7 @@ def run_shell(sh):
 def get_sh_path(str):
     return sys.path[0]+'/sh/'+str
 
+
 def start_trace(pid, function_names):
     print("Setting ftrace parameters ...\n")
     os.system("rm -f log")
@@ -100,6 +101,7 @@ def start_trace(pid, function_names):
     print("Enabling tracing ...")
     os.system("echo 1 > /sys/kernel/debug/tracing/tracing_on")
     print("ftrace configured. Executing the workload...")
+    
 
 def end_trace(function_names):
     print("dumping and clearing trace")
