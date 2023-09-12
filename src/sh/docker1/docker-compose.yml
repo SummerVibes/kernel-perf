@@ -1,0 +1,8 @@
+version: '3.1'
+services:
+  ubuntu:
+    image: ubuntu:latest
+    container_name: ubuntu
+    privileged: true
+    command: date +%H:%M:%S:%3N
+    network_mode: "host"

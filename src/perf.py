@@ -3,6 +3,7 @@ import os
 import subprocess
 import time
 from task.docker import DockerPerf
+from task.docker1 import Docker1Perf
 from task.mem_lb import MemoryLBPerf
 from task.mem_ls import MemoryLSPerf
 from task.mem_real import MemoryRealPerf
@@ -74,9 +75,10 @@ TaskRunner(MemorySBPerf(single_result)).start()
 TaskRunner(MemorySSPerf(single_result)).start()
 TaskRunner(MemoryRealPerf(single_result)).start()
 TaskRunner(RedisPerf(single_result)).start()
-# TaskRunner(DockerPerf(single_result)).start()
+TaskRunner(Docker1Perf(single_result)).start()
+TaskRunner(DockerPerf(single_result)).start()
 # TaskRunner(VmPerf(single_result)).start()
-# TaskRunner(XSBenchPerf(single_result)).start()
+TaskRunner(XSBenchPerf(single_result)).start()
 
 with open(f"perf-{time.strftime('%d-%H-%M-%S', time.localtime())}.json", 'x') as f:
     json.dump(all_perf_result, f)
