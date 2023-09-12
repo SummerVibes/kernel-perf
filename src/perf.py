@@ -35,8 +35,8 @@ class TaskRunner():
             return
         # run
         print(f"======================= Run for {self.task_name} ===========================")
-        alloced = int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $1}'"))
-        alloced_zero = int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $1}'"))
+        alloced = int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $2}'"))
+        alloced_zero = int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $2}'"))
         self.task.start()
         #functions = ["do_anonymous_page", "do_huge_pmd_anonymous_page"]
         functions = ["do_anonymous_page"]
@@ -48,8 +48,8 @@ class TaskRunner():
             res=self.task.monitor(pid, self.interval)
             res['time'] = tools.get_cur_time()
             self.metric.append(res)
-        alloced = alloced - int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $1}'"))
-        alloced_zero = alloced_zero - int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $1}'"))
+        alloced = alloced - int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $2}'"))
+        alloced_zero = alloced_zero - int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $2}'"))
         # end / cleanup
         print(f"======================= Cleanup for {self.task_name} =======================")
         print(f"alloced: {alloced}, alloced_zero: {alloced_zero}, hit: {alloced_zero/alloced}%")
