@@ -78,6 +78,8 @@ def run_shell(sh):
 def get_sh_path(str):
     return sys.path[0]+'/sh/'+str
 
+alloced = 0
+alloced_zero = 0
 def start_trace(pid, function_names):
     print("Setting ftrace parameters ...\n")
     os.system("rm -f log")
@@ -100,8 +102,13 @@ def start_trace(pid, function_names):
     print("Enabling tracing ...")
     os.system("echo 1 > /sys/kernel/debug/tracing/tracing_on")
     print("ftrace configured. Executing the workload...")
+    alloced = int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $1}'"))
+    alloced_zero = int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $1}'"))
 
 def end_trace(function_names):
+    alloced = alloced - int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $1}'"))
+    alloced_zero = alloced_zero - int(os.system("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $1}'"))
+    print(f"alloced: {alloced}, alloced_zero: {alloced_zero}")
     print("dumping and clearing trace")
     os.system("echo 0 > /sys/kernel/debug/tracing/tracing_on")
     for f in function_names:
