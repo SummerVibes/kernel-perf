@@ -90,7 +90,8 @@ def start_trace(pid, function_names):
     print("Selecting ftrace filter ...")
     os.system(f"echo | tee /sys/kernel/debug/tracing/set_ftrace_filter")
     for f in function_names:
-        os.system(f"echo {f} >> /sys/kernel/debug/tracing/set_ftrace_filter")
+        if os.system(f"echo {f} >> /sys/kernel/debug/tracing/set_ftrace_filter"):
+            function_names.remove(f)
     print("Enabling trace for forked pidsi ...")
     os.system("echo 1 > /sys/kernel/debug/tracing/options/function-fork")
     print("Increasing trace buffer size ...")
