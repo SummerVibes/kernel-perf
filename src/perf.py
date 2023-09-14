@@ -3,6 +3,7 @@ import os
 import subprocess
 import time
 from task.docker import DockerPerf
+from task.vm import VmPerf
 from task.docker1 import Docker1Perf
 from task.mem_lb import MemoryLBPerf
 from task.mem_ls import MemoryLSPerf
@@ -26,6 +27,8 @@ class TaskRunner():
         self.metric = self.task_result["metric"] = []
 
     def start(self):
+        b = os.popen("cat /sys/module/kzerod/parameters/enabled").readline()
+        kzerod_enabled = True if 'Y' in b else False
         # prepare
         print(f"======================= Prepare for {self.task_name} =======================")
         try:
@@ -36,11 +39,11 @@ class TaskRunner():
             return
         # run
         print(f"======================= Run for {self.task_name} ===========================")
-        alloced = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $2}'").readline())
-        alloced_zero = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $2}'").readline())
+        if kzerod_enabled:
+            alloced = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $2}'").readline())
+            alloced_zero = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $2}'").readline())
         self.task.start()
         functions = ["do_anonymous_page", "do_huge_pmd_anonymous_page"]
-        #functions = ["do_anonymous_page"]
         pid = self.task.get_pid_for_monitor()
         tools.start_trace(pid, functions)
         # monitor
@@ -49,9 +52,10 @@ class TaskRunner():
             res=self.task.monitor(pid, self.interval)
             res['time'] = tools.get_cur_time()
             self.metric.append(res)
-        alloced = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $2}'").readline()) - alloced
-        alloced_zero = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $2}'").readline()) - alloced_zero
-        print(f"alloced: {alloced}, alloced_zero: {alloced_zero}, hit: {alloced_zero/alloced*100}%")
+        if kzerod_enabled:
+            alloced = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $2}'").readline()) - alloced
+            alloced_zero = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $2}'").readline()) - alloced_zero
+            print(f"alloced: {alloced}, alloced_zero: {alloced_zero}, hit: {alloced_zero/alloced*100}%")
         # end / cleanup
         print(f"======================= Cleanup for {self.task_name} =======================")
         tools.end_trace(functions)
@@ -77,8 +81,8 @@ TaskRunner(MemoryRealPerf(single_result)).start()
 TaskRunner(RedisPerf(single_result)).start()
 TaskRunner(Docker1Perf(single_result)).start()
 TaskRunner(DockerPerf(single_result)).start()
-# TaskRunner(VmPerf(single_result)).start()
-TaskRunner(XSBenchPerf(single_result)).start()
+TaskRunner(VmPerf(single_result)).start()
+#TaskRunner(XSBenchPerf(single_result)).start()
 
 with open(f"perf-{time.strftime('%d-%H-%M-%S', time.localtime())}.json", 'x') as f:
     json.dump(all_perf_result, f)
