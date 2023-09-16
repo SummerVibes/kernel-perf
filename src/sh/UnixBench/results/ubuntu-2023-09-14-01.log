@@ -1,7 +1,0 @@
-
-########################################################
-Dhrystone 2 using register variables -- 1 copy
-==> "/root/UnixBench/pgms/dhry2reg" 10 2>&1 >> "/root/UnixBench/results/ubuntu-2023-09-14-01.log"
-
-#### Pass 1
-

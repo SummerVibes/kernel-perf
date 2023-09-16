@@ -12,25 +12,18 @@ unsigned long bytes_per_thread = 1;
 int real = 0;
 
 unsigned long page_size = 4096;
+//unsigned long page_size = 4096*512;
 
 void *alloc_mem(void *arg) {
   int nr_pages, iter = 0;
   char *tmp, *start;
 
   while (iter < iterations) {
-#if 0
-		tmp = mmap(NULL, bytes_per_thread, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-		if (tmp == MAP_FAILED) {
-			printf("mmap failed\n");
-			return NULL;
-		}
-#else
     tmp = malloc(bytes_per_thread);
     if (!tmp) {
       printf("Malloc failed");
       exit(EXIT_FAILURE);
     }
-#endif
 
     start = tmp;
     nr_pages = bytes_per_thread / page_size;
@@ -38,18 +31,16 @@ void *alloc_mem(void *arg) {
       *start = 'A';
       start += page_size;
       if(real) {
-        int clock = 10000; // 1 亿次
-        while(clock-- > 0)
-          continue;
+	int clock = 10000; 
+	while(clock-- > 0)
+	  continue;
+	//usleep(2);
+	//if(nr_pages%512==0){
+	//  usleep(10);
+	//}
       }
     }
-#if 0
-		if (munmap(tmp, bytes_per_thread) == 1)
-			perror("error unmapping the file\n");
-#else
     free(tmp);
-#endif
-
     iter++;
   }
   return NULL;

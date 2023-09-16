@@ -40,8 +40,8 @@ class TaskRunner():
         # run
         print(f"======================= Run for {self.task_name} ===========================")
         if kzerod_enabled:
-            alloced = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $2}'").readline())
-            alloced_zero = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $2}'").readline())
+            alloced = int(os.popen("cat /proc/zoneinfo | grep zero_page_alloc_total | awk '{print $2}'").readline())
+            alloced_zero = int(os.popen("cat /proc/zoneinfo | grep zero_page_alloc_prezero | awk '{print $2}'").readline())
         self.task.start()
         functions = ["do_anonymous_page", "do_huge_pmd_anonymous_page"]
         pid = self.task.get_pid_for_monitor()
@@ -53,8 +53,8 @@ class TaskRunner():
             res['time'] = tools.get_cur_time()
             self.metric.append(res)
         if kzerod_enabled:
-            alloced = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_total | awk '{print $2}'").readline()) - alloced
-            alloced_zero = int(os.popen("cat /proc/zoneinfo | grep nr_zero_page_alloc_prezero | awk '{print $2}'").readline()) - alloced_zero
+            alloced = int(os.popen("cat /proc/zoneinfo | grep zero_page_alloc_total | awk '{print $2}'").readline()) - alloced
+            alloced_zero = int(os.popen("cat /proc/zoneinfo | grep zero_page_alloc_prezero | awk '{print $2}'").readline()) - alloced_zero
             print(f"alloced: {alloced}, alloced_zero: {alloced_zero}, hit: {alloced_zero/alloced*100}%")
         # end / cleanup
         print(f"======================= Cleanup for {self.task_name} =======================")
@@ -81,7 +81,7 @@ TaskRunner(MemoryRealPerf(single_result)).start()
 TaskRunner(RedisPerf(single_result)).start()
 TaskRunner(Docker1Perf(single_result)).start()
 TaskRunner(DockerPerf(single_result)).start()
-TaskRunner(VmPerf(single_result)).start()
+#TaskRunner(VmPerf(single_result)).start()
 #TaskRunner(XSBenchPerf(single_result)).start()
 
 with open(f"perf-{time.strftime('%d-%H-%M-%S', time.localtime())}.json", 'x') as f:
